@@ -8,6 +8,8 @@ class Page{
 	private $tpl;
 	private $options =[];
 	private $defaults = [
+		"header" => true,
+		"footer" => true,
 		"data" => []
 	];
 
@@ -18,6 +20,8 @@ class Page{
 		//quero que o que a pessoa informou como parametro no array opts da classe construtura sobrescreva no array defaults 
 		//se eu passar um parametro no opts e der conflito com o defaults, vale o opts
 		//o merge mescla as informações e guarda dentro de options
+		
+		$this->defaults["data"]["session"] = $_SESSION;
 		$this->options = array_merge($this->defaults, $opts);
 
 		$config = array(
@@ -41,8 +45,8 @@ class Page{
 		}
 		*/
 
-		//desenhando o header
-		$this->tpl->draw("header");
+		//validando e desenhando o header
+		if($this->options["header"] === true) $this->tpl->draw("header");
 } 
 
 
@@ -59,13 +63,13 @@ class Page{
 		public function setTpl($name, $data = array(), $returnHTML = false){
 			$this->setData($data);
 			//desenhando um template na tela 
-			return $this->tpl->draw($name, $data, $returnHTML);
+			return $this->tpl->draw($name, $returnHTML);
 		}
 
 
 		//criando o footer
 		public function __destruct(){
-			$this->tpl->draw("footer");
+			if($this->options["footer"] === true) $this->tpl->draw("footer");
 		}
 
 
