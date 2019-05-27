@@ -91,6 +91,15 @@ $app->get('/admin/users/create', function() {
 $app->get('/admin/users/:iduser/delete', function($iduser) {
 	
 	User::verifyLogin();
+
+	$user = new User();
+
+	$user->get((int)$iduser);
+
+	$user->delete();
+
+	header("Location: /ecommerce/index.php/admin/users");
+ 	exit;
     
 });
 
@@ -141,6 +150,19 @@ $app->post("/admin/users/create", function () {
 $app->post('/admin/users/:iduser', function($iduser) {
 	
 	User::verifyLogin();
+
+	$users = new User();
+
+	$_POST["inadmin"] = (isset($_POST["inadmin"])) ? 1 : 0;
+
+	$users->get((int)$iduser);
+
+	$users-> setData($_POST);
+
+	$users->update();
+
+	header("Location: /ecommerce/index.php/admin/users");
+ 	exit;
     
 });
 
