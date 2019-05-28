@@ -7,7 +7,7 @@
   </h1>
   <ol class="breadcrumb">
     <li><a href="/admin"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li class="active"><a href="/admin/users">Usuários</a></li>
+    <li class="active"><a href="/ecommerce/index.php/admin/users">Usuários</a></li>
   </ol>
 </section>
 

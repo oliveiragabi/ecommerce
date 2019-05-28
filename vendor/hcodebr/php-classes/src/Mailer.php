@@ -28,7 +28,7 @@ class Mailer{
 
 
 	foreach ($data as $key => $value) {
-		$tpl->assign($key, $value)
+		$tpl->assign($key, $value);
 	}
 
 	$html = $tpl->draw($tplName, true);
