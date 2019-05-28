@@ -312,6 +312,26 @@ $app->post('/admin/categories/:idcategory', function($idcategory){
 	
 });
 
+$app->get('/categories/:idcategory', function($idcategory){
+
+	//User::verifyLogin();
+
+	$category = new Category();
+
+	//tudo q vem na url é convertido p texto, ai precisa fazer o cast pra inteiro aqui no codigo
+
+	$category->get((int)$idcategory);
+
+	$page = new Page();
+	
+	$page->setTpl("category", [
+		"category"=>$category->getValues(),
+		"products"=>[]
+
+	]);
+
+});
+
 
 
 

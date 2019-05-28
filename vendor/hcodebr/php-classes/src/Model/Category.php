@@ -30,6 +30,8 @@ class Category extends Model {
 		));
 
 		$this->setData($results[0]);
+
+		Category::updatefile();
 	}
 
 
@@ -52,13 +54,30 @@ class Category extends Model {
 		$sql->query("DELETE FROM tb_categories WHERE idcategory = :idcategory", array(
 			":idcategory"=>$this->getidcategory()
 		));
+
+		Category::updatefile();
 	}
 
-	
+
+	public static function updatefile(){
+
+		$categories = Category::listAll();
+
+		$html = [];
+
+		foreach ($categories as $row) {
+			 array_push($html, '<li><a href="/ecommerce/index.php/categories/'. $row['idcategory'] .'">'. $row["descategory"] . '</a></li>');
+		}
+
+		//caminho físico do arquivo,  conteúdo
+		//convertendo o array do html p string com implode 
+		//explode: string-array
+		file_put_contents($_SERVER['DOCUMENT_ROOT']. DIRECTORY_SEPARATOR . "ecommerce" . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . "categories-menu.html" , implode('', $html));
+
+		}
 
 
-
-}
+	}
 
 
 
