@@ -54,6 +54,74 @@ class Products extends Model {
 		));
 	}
 
+	public function checkPhoto(){
+		if(file_exists($_SERVER['DOCUMENT_ROOT']. DIRECTORY_SEPARATOR . 
+						"ecommerce" .  DIRECTORY_SEPARATOR .
+						"res". DIRECTORY_SEPARATOR . 
+						"site" . DIRECTORY_SEPARATOR . 
+						"img" . DIRECTORY_SEPARATOR . 
+						"products" . DIRECTORY_SEPARATOR . 
+						$this->getidproduct() . ".jpg")){
+			$url = "/ecommerce/res/site/img/products/" . $this->getidproduct() . ".jpg";
+		}else{
+			$url = "/ecommerce/res/site/img/product.jpg";
+		}
+		return $this->setdesphoto($url);
+	}
+
+
+	public function getValues(){
+		$this->checkPhoto();
+		$value = parent::getValues();
+		return $value;
+	}
+
+
+	public function setPhoto($file){
+
+		//convertendo arq que nao sao jpg para jpg
+
+		$extension = explode( '.', $file['name']);
+
+		//pegando a extensão do arquivo
+		$extension = end($extension);
+
+
+		switch ($extension) {
+			case 'jpg':
+			case 'jpeg':
+			$image = imagecreatefromjpeg($file['tmp_name']);
+				# code...
+				break;
+
+
+			case 'gif':
+			$image = imagecreatefromgif($file['tmp_name']);
+				break;
+
+
+			case 'png':
+			$image = imagecreatefrompng($file['tmp_name']);
+				break;
+		}
+
+
+		$dest = $_SERVER['DOCUMENT_ROOT']. DIRECTORY_SEPARATOR . 
+						"ecommerce" .  DIRECTORY_SEPARATOR .
+						"res". DIRECTORY_SEPARATOR . 
+						"site" . DIRECTORY_SEPARATOR . 
+						"img" . DIRECTORY_SEPARATOR . 
+						"products" . DIRECTORY_SEPARATOR . 
+						$this->getidproduct() . ".jpg";
+		
+
+		imagejpeg($image, $dest);
+		imagedestroy($image);
+
+		$this->checkPhoto();
+
+
+	}
 
 	
 
