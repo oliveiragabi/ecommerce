@@ -8,8 +8,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 class Mailer{
 
-	const USERNAME = "******";
-	const PASSWORD = "*****";
+	const USERNAME = "gabrielleolives1@gmail.com";
+	const PASSWORD = "20002801";
 	const NAME_FROM = "Curso PHP";
 
 	private $mail;
