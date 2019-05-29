@@ -144,6 +144,30 @@ class Category extends Model {
 	}
 
 
+	public function getProductsPage($page = 1, $itemsPerPage = 2){
+
+		$start = ($page-1) * $itemsPerPage;
+		$sql= new Sql();
+		$results = $sql->select("SELECT SQL_CALC_FOUND_ROWS * from tb_products a 
+					Inner join tb_productscategories b
+					on a.idproduct = b.idproduct
+					inner join tb_categories c on c.idcategory = b.idcategory
+					where c.idcategory = :idcategory
+					limit $start ,$itemsPerPage;", 
+					[
+						":idcategory"=>$this->getidcategory()
+					]);
+		$resultTotal = $sql->select("SELECT FOUND_ROWS() as nrtotal");
+		return  [
+			'data'=>Products::checkList($results),
+			'total'=>(int)$resultTotal[0]["nrtotal"],
+			'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage)
+		];	
+
+
+	}
+
+
 
 	}
 

@@ -22,20 +22,23 @@ $app->get('/', function() {
 
 $app->get('/categories/:idcategory', function($idcategory){
 
-	User::verifyLogin();
 
+	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
 	$category = new Category();
-
-	//tudo q vem na url é convertido p texto, ai precisa fazer o cast pra inteiro aqui no codigo
-
 	$category->get((int)$idcategory);
-
+	$pagination = $category->getProductsPage($page);
+	$pages = [];
+	for ($i=1; $i<= $pagination['pages']; $i++) { 
+		array_push($pages, [
+			'link'=>'/ecommerce/index.php/categories/' . $category->getidcategory().'?page='.$i,
+			'page'=>$i
+		]);
+	}
 	$page = new Page();
-	
 	$page->setTpl("category", [
 		"category"=>$category->getValues(),
-		"products"=>Products::checkList($category->getProducts())
-
+		"products"=>$pagination["data"],
+		"pages"=>$pages
 	]);
 
 });
