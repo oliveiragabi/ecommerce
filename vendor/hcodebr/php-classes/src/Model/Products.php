@@ -18,7 +18,24 @@ class Products extends Model {
 
 	}
 
-		public function save(){
+	//fazendo checagem na lista de produtos e passando o desphoto pq senao a foto n carrega na home, 
+
+	public static function checkList($list){
+
+		//usando a mesma variavel
+		foreach ($list as &$row) {
+			$p = new Products();
+			$p->setData($row);
+			//passou p getvalues e esta verificando se existe a foto ou n
+			$row = $p->getValues();
+		}
+
+		return $list;
+
+	}
+
+
+	public function save(){
 		$sql = new Sql();
 		$results = $sql->select("CALL sp_products_save(:idproduct, :desproduct, :vlprice, :vlwidth, :vlheight, :vllength, :vlweight, :desurl)", array(
         	":idproduct" =>$this->getidproduct(),
@@ -54,6 +71,7 @@ class Products extends Model {
 		));
 	}
 
+
 	public function checkPhoto(){
 		if(file_exists($_SERVER['DOCUMENT_ROOT']. DIRECTORY_SEPARATOR . 
 						"ecommerce" .  DIRECTORY_SEPARATOR .
@@ -70,11 +88,13 @@ class Products extends Model {
 	}
 
 
+
 	public function getValues(){
 		$this->checkPhoto();
 		$value = parent::getValues();
 		return $value;
 	}
+
 
 
 	public function setPhoto($file){
