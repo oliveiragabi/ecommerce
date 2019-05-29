@@ -143,6 +143,17 @@ class Products extends Model {
 
 	}
 
+
+	public function getFromURL($desurl){
+
+		$sql = new Sql();
+		$rows = $sql->select("SELECT * FROM tb_products WHERE desurl = :desurl LIMIT 1", [
+			':desurl'=>$desurl
+		]);
+
+		$this->setData($rows[0]);
+	}
+
 	
 
 	}
