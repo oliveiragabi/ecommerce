@@ -51,7 +51,7 @@
             </div>
             <div class="form-group">
               <label for="desurl">URL</label>
-              <input type="text" class="form-control" id="desurl" name="desurl" step="0.01" placeholder="htttp://">
+              <input type="text" class="form-control" id="desurl" name="desurl" step="0.00" placeholder="htttp://">
             </div>
           </div>
           <!-- /.box-body -->

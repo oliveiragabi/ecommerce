@@ -13,7 +13,7 @@ class Products extends Model {
 
 		$sql = new Sql();
 
-		return $sql->select("SELECT * FROM tb_products ORDER BY desproduct");
+		return $sql->select("SELECT * FROM db_ecommerce.tb_products ORDER BY desproduct");
 
 
 	}
@@ -55,7 +55,7 @@ class Products extends Model {
 
 		$sql = new Sql();
 
-		 $results = $sql->select("SELECT * FROM tb_products WHERE idproduct = :idproduct ", array(
+		 $results = $sql->select("SELECT * FROM db_ecommerce.tb_products WHERE idproduct = :idproduct ", array(
  			":idproduct"=>$idproduct
  		));
  
@@ -66,7 +66,7 @@ class Products extends Model {
 	
 	public function delete(){
 		$sql = new Sql();
-		$sql->query("DELETE FROM tb_products WHERE idproduct = :idproduct", array(
+		$sql->query("DELETE FROM db_ecommerce.tb_products WHERE idproduct = :idproduct", array(
 			":idproduct"=>$this->getidproduct()
 		));
 	}
@@ -145,32 +145,22 @@ class Products extends Model {
 
 
 	public function getFromURL($desurl){
-
 		$sql = new Sql();
-		$rows = $sql->select("SELECT * FROM tb_products WHERE desurl = :desurl LIMIT 1", [
-			':desurl'=>$desurl
+		$rows = $sql->select("SELECT * FROM db_ecommerce.tb_products where desurl = :desurl", [
+			":desurl"=>$desurl
 		]);
 
+		
 		$this->setData($rows[0]);
 	}
 
 
 	public function getCategories(){
-
 		$sql = new Sql();
 
-		return $results = $sql->select("
-			SELECT * FROM tb_categories a 
-			INNER JOIN tb_productscategories b 
-			ON a.idcategory = b.idcategory
-			WHERE b.idproduct = :idproduct 
-			", [
-
-				':idproduct'=>$this->getidproduct()
-
-			]);
-
-		
+		return $results = $sql->select("SELECT * FROM tb_categories a INNER JOIN tb_productscategories b on a.idcategory = b.idcategory WHERE b.idproduct = :idproduct", [
+			":idproduct" =>$this->getidproduct()
+		]);
 	}
 
 

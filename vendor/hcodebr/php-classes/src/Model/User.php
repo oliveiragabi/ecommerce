@@ -3,8 +3,10 @@
 namespace Hcode\Model;
 
 use \Hcode\DB\Sql;
-use \Hcode\Mailer;
 use \Hcode\Model;
+use \Hcode\Mailer;
+use \Hcode\Model\Cart;
+
 
 
 class User extends Model {
@@ -88,11 +90,15 @@ class User extends Model {
 
 	public static function verifyLogin($inadmin = true)
 	{
-		if(User::checkLogin($inadmin)) 
-		{
-			header("Location: /ecommerce/index.php/admin/login");
+		if(!User::checkLogin($inadmin)){
+			if($inadmin){
+				
+				header("Location: /ecommerce/index.php/admin/login");
+			
+			} else {
+				header("Location: /ecommerce/index.php/login");
+			}
 			exit;
-
 		}
 		
 	}

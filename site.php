@@ -22,8 +22,6 @@ $app->get('/', function() {
 });
 
 $app->get('/categories/:idcategory', function($idcategory){
-
-
 	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
 	$category = new Category();
 	$category->get((int)$idcategory);
@@ -67,9 +65,58 @@ $app->get('/cart', function() {
 
 	$page = new Page();
 
-	$page->setTpl("cart");
+	$page->setTpl("cart", [
+		'cart'=>$cart->getValues(),
+		'products'=>$cart->getProducts()
+	]);
 
 });
+
+$app->get('/cart/:idproduct/add', function($idproduct) {
+
+	$product = new Products();
+
+	$product->get((int)$idproduct);
+
+	$cart = Cart::getFromSession();
+
+	$cart->addProduct($product);
+
+	header("Location: /ecommerce/index.php/cart");
+	exit;
+
+});
+
+$app->get('/cart/:idproduct/minus', function($idproduct) {
+
+	$product = new Products();
+
+	$product->get((int)$idproduct);
+
+	$cart = Cart::getFromSession();
+
+	$cart->removeProduct($product);
+
+	header("Location: /ecommerce/index.php/cart");
+	exit;
+
+});
+
+$app->get('/cart/:idproduct/remove', function($idproduct) {
+
+	$product = new Products();
+
+	$product->get((int)$idproduct);
+
+	$cart = Cart::getFromSession();
+
+	$cart->removeProduct($product, true);
+
+	header("Location: /ecommerce/index.php/cart");
+	exit;
+
+});
+
 
 
 ?>
