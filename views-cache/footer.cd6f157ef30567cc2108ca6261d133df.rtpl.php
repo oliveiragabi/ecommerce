@@ -16,7 +16,7 @@
                 
                 <div class="col-md-3 col-sm-6">
                     <div class="footer-menu">
-                        <h2 class="footer-wid-title">Navegação </h2>
+                        <h2 class="footer-wid-title">Navegacao </h2>
                         <ul>
                             <li><a href="#">Minha Conta</a></li>
                             <li><a href="#">Meus Pedidos</a></li>
