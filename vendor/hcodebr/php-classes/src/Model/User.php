@@ -12,6 +12,42 @@ class User extends Model {
 	const SESSION = "User";
 	const SECRET = "Hcodephp7_secret";
 
+
+	public static function getFromSession(){
+
+		$user = new User(); 
+
+		if(isset($_SESSION[User::SESSION]) && (int)$_SESSION[User::SESSION]['iduser'] > 0){
+
+			$user->setData($_SESSION[User::SESSION]);
+		}
+
+		return $user;
+	}
+
+	public static function checkLogin($inadmin = true){
+		
+		if(
+			!isset($_SESSION[User::SESSION]) 
+			|| 
+			!$_SESSION[User::SESSION] 
+			|| 
+			!(int)$_SESSION[User::SESSION]["iduser"] > 0){
+			return false;
+		}else{
+			if($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true){
+				return true;
+			}else if($inadmin === false){
+				
+				return true;
+			}else{
+				return false;
+			}
+		}
+
+	}
+	
+
   // esse método verifica se o login que  foi digitado está no banco
   // se o login for valido, irá trazer o hash e validar se esse hash é compativel com o passado pelo usuario
 	public static function login($login, $password) {
@@ -52,15 +88,7 @@ class User extends Model {
 
 	public static function verifyLogin($inadmin = true)
 	{
-		if(
-			!isset($_SESSION[User::SESSION]) 
-			|| 
-			!$_SESSION[User::SESSION] 
-			|| 
-			!(int)$_SESSION[User::SESSION]["iduser"] > 0 
-			|| 
-			(bool)$_SESSION[User::SESSION]["inadmin"] !== $inadmin
-		) 
+		if(User::checkLogin($inadmin)) 
 		{
 			header("Location: /ecommerce/index.php/admin/login");
 			exit;
