@@ -44,7 +44,7 @@
 
                                     <tr class="cart_item">
                                         <td class="product-remove">
-                                            <a title="Removeesses items" class="remove" href="/ecommerce/index.php/cart/<?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/remove">×</a> 
+                                            <a title="Removeesses items" class="remove" href="/ecommerce/index.php/cart/<?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/remove"> x </a> 
                                         </td>
 
                                         <td class="product-thumbnail">
