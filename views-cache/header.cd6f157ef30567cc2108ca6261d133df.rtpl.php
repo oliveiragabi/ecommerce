@@ -49,7 +49,7 @@
                             <li><a href="/ecommerce/index.php/logout"><i class="fa fa-close"></i> Sair </a></li>
                             <?php }else{ ?>
 
-                            <li><a href="/ecommecer/index.php/login"><i class="fa fa-lock"></i> Login</a></li>
+                            <li><a href="/ecommerce/index.php/login"><i class="fa fa-lock"></i> Login</a></li>
                             <?php } ?>
 
                         </ul>
