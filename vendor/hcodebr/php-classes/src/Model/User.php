@@ -15,6 +15,7 @@ class User extends Model {
 	const SECRET = "Hcodephp7_Secret";
 	const ERROR = "UserError";
 	const ERROR_REGISTER = "UserErrorRegister";
+	const SUCCESS = "UserSUCCESS";
 
 
 	public static function getFromSession(){
@@ -198,100 +199,97 @@ class User extends Model {
 	}
 
 
-	public static function getForgot($email)
-	{
-		$sql = new Sql();
+    public static function getForgot($email, $inadmin = true)
+    {
+         $sql = new Sql();
+         $results = $sql->select("
+             SELECT *
+             FROM tb_persons a
+             INNER JOIN tb_users b USING(idperson)
+             WHERE a.desemail = :email;
+         ", array(
+             ":email"=>$email
+         ));
+         if (count($results) === 0)
+         {
+             throw new \Exception("Não foi possível recuperar a senha.");
+         }
+         else
+         {
+             $data = $results[0];
+             $results2 = $sql->select("CALL sp_userspasswordsrecoveries_create(:iduser, :desip)", array(
+                 ":iduser"=>$data['iduser'],
+                 ":desip"=>$_SERVER['REMOTE_ADDR']
+             ));
+             if (count($results2) === 0)
+             {
+                 throw new \Exception("Não foi possível recuperar a senha.");
+             }
+             else
+             {
+                 $dataRecovery = $results2[0];
+                 $iv = random_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+                 $code = openssl_encrypt($dataRecovery['idrecovery'], 'aes-256-cbc', User::SECRET, 0, $iv);
+                 $result = base64_encode($iv.$code);
+                 if ($inadmin === true) {
+                     $link = "http://127.0.0.1/ecommerce/index.php/admin/forgot/reset?code=$result";
+                 } else {
+                     $link = "http://127.0.0.1/ecommerce/index.php/forgot/reset?code=$result";
+                 } 
+                 $mailer = new Mailer($data['desemail'], $data['desperson'], "Redefinir senha da Hcode Store", "forgot", array(
+                     "name"=>$data['desperson'],
+                     "link"=>$link
+                 )); 
+                 $mailer->send();
+                 return $link;
+             }
+         }
+     }
+     public static function validForgotDecrypt($result)
+     {
+         $result = base64_decode($result);
+         $code = mb_substr($result, openssl_cipher_iv_length('aes-256-cbc'), null, '8bit');
+         $iv = mb_substr($result, 0, openssl_cipher_iv_length('aes-256-cbc'), '8bit');;
+         $idrecovery = openssl_decrypt($code, 'aes-256-cbc', User::SECRET, 0, $iv);
+         $sql = new Sql();
+         $results = $sql->select("
+             SELECT *
+             FROM tb_userspasswordsrecoveries a
+             INNER JOIN tb_users b USING(iduser)
+             INNER JOIN tb_persons c USING(idperson)
+             WHERE
+             a.idrecovery = :idrecovery
+             AND
+             a.dtrecovery IS NULL
+             AND
+             DATE_ADD(a.dtregister, INTERVAL 1 HOUR) >= NOW();
+         ", array(
+             ":idrecovery"=>$idrecovery
+         ));
+         if (count($results) === 0)
+         {
+             throw new \Exception("Não foi possível recuperar a senha.");
+         }
+         else
+         {
+             return $results[0];
+         }
+     }
 
-		$results = $sql->select("
-			SELECT *
-			FROM tb_persons a 
-			INNER JOIN tb_users b USING(idperson)
-			WHERE a.desemail = :email;
-			", array(
-				":email" => $email 
-			));
-
-		if(count($results) === 0){
-
-			//namespace principal
-			throw new \Exception("Não foi possível recuperar a senha ");
-			
-		}else{
-
-			$data = $results[0];
-			$results2 = $sql->select("CALL sp_userspasswordsrecoveries_create(:iduser, :desip)", array(
-				":iduser"=>$data["iduser"],
-				":desip"=> $_SERVER["REMOTE_ADDR"]
-			));
-
-
-			if(count($results2) === 0 ){
-				throw new \Exception("Não foi possível recuperar a senha" );
-				
-			}else{
-				$dataRecovery = $results2[0];
-
-				//fazendo criptografia
-				//transformando em base64
-
-				$iv = random_bytes(openssl_cipher_iv_length('aes-256-cbc'));
-				$code = openssl_encrypt($dataRecovery["idrecovery"], "aes-256-cbc", User::SECRET, 0, $iv);
-				$result = base64_encode($iv . $code);
-
-				$link = "http://127.0.0.1/ecommerce/index.php/admin/forgot/reset?code=$code";
-
-				$mailer =  new Mailer($data["desemail"], $data["desperson"], "Redefinir Senha do Curso PHP", "forgot", array(
-					"name"=>$data["desperson"],
-					"link"=>$link
-
-				) );
-
-				$mailer->send();
-
-				return $data;
-
-			}
-		}
-
-
-	}
-
-
-	public static function validForgotDescrypt($aux)
-	{
-		$aux = base64_decode($aux);
-
-     	$code = mb_substr($aux, openssl_cipher_iv_length('aes-256-cbc'), null, '8bit');
-
-     	$iv = mb_substr($aux, 0, openssl_cipher_iv_length('aes-256-cbc'), '8bit');
-
-     	$idrecovery = openssl_decrypt($code, 'aes-256-cbc', User::SECRET, 0, $iv);
-     	
+     public static function setForgetUsed($idrecovery){
      	$sql = new Sql();
-     	
-     	$results = $sql->select("
-     		SELECT * FROM tb_userspasswordsrecoveries a 
-     		INNER JOIN tb_users b USING(iduser) 
-     		INNER JOIN tb_persons c USING(idperson) 
-     		WHERE 
-     		a.idrecovery = :idrecovery 
-     		AND 
-     		a.dtrecovery IS NULL 
-     		AND DATE_ADD(a.dtregister, INTERVAL 1 HOUR) >= NOW();",
-     		 array(
-         		":idrecovery"=>$idrecovery
-         		));
-     	
-     	if (count($results) === 0)
-     	{
-        	throw new \Exception("Não foi possível recuperar a senha.");
-     	}
-     	else
-     	{
-         	return $results[0];
-     	}
+     	$sql->query("UPDATE tb_userspasswordsrecoveries SET dtrecovery = NOW() WHERE idrecovery = :idrecovery", array(
+     		":idrecovery"=>$idrecovery
+     	));
+     }
+     public function setPassword($password){
+     	$sql = new Sql();
+     	$sql->query("UPDATE tb_users SET despassword = :password WHERE iduser = :iduser", array(
+     		":password"=>$password,
+     		":iduser"=>$this->getiduser()
+     	));
+     }
 
-	}
 
 	public static function  setError($msg){
 
@@ -333,7 +331,7 @@ class User extends Model {
      }
 
 
-     public static function checkLoginExist($login){
+    public static function checkLoginExist($login){
      	$sql = new Sql();
 
      	$results = $sql->select("SELECT *FROM tb_users
@@ -343,6 +341,25 @@ class User extends Model {
 
      	return (count($results) > 0);
      }
+
+
+    public static function  setSuccess($msg){
+
+		$_SESSION[User::SUCCESS] = $msg;
+	}
+
+	public static function getSuccess(){
+
+		$msg = (isset($_SESSION[User::SUCCESS]) && $_SESSION[User::SUCCESS]) ? $_SESSION[User::SUCCESS] : '';
+
+		User::clearSuccess();
+		return $msg;
+	}
+
+	public static function clearSuccess(){
+
+		$_SESSION[User::SUCCESS] = NULL;
+	}
 
 
 

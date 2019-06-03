@@ -94,6 +94,16 @@ class Mailer{
 	public function send(){
 		return $this->mail->send();
 	}
+
+
+	$this->mail->isSMTP();
+    $this->mail->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
 }
 
 
