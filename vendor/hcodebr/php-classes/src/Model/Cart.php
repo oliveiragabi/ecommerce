@@ -191,6 +191,7 @@ class Cart extends Model {
 		if($totals['nrqtd'] > 0 ){
 			//funcao para ler xml
 			//url do caminho e o metodo q vai se usado
+			if($totals['vlwidth'] < 11 ) $totals['vlwidth'] = 11;
 			if($totals['vlheight'] < 2) $totals['vlheight'] = 2;
 			if($totals['vllength'] < 16) $totals['vllength'] = 16;
 
@@ -213,10 +214,10 @@ class Cart extends Model {
 			]);
 
 
-		$xml = implexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo?" . $qs);
+		$xml = simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo?".$qs);
 
-		$result = $xml->Servicos->cServico;
-
+     	$result = $xml->Servicos->cServico;
+     	
 		if($result->MsgError != ''){
 
 			Cart::setMsgError($result->MsgErro);
@@ -239,30 +240,11 @@ class Cart extends Model {
 		}
 	}
 
-	public static function formatValueToDecimal($vale):float{
+	public static function formatValueToDecimal($value):float{
 
 		$value = str_replace('.', '', $value);
 		return str_replace(',', '.',  $value);
 
-	}
-
-
-	public static function  setMsgError($msg){
-
-		$_SESSION[Cart::SESSION_ERROR] = $msg;
-	}
-
-	public static function getMsgError(){
-
-		$msg = (isset($_SESSION[Cart::SESSION_ERROR])) ? $_SESSION[Cart::SESSION_ERROR] : "";
-
-		Cart::clearMsgError();
-		return $msg;
-	}
-
-	public static function clearMsgError(){
-
-		$_SESSION[Cart::SESSION_ERROR] = NULL;
 	}
 
 

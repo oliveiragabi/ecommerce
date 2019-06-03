@@ -42,7 +42,7 @@
                         <ul>
                             <li><a href="/ecommerce/index.php/profile"><i class="fa fa-user"></i> Minha Conta</a></li>
                             <li><a href="#"><i class="fa fa-heart"></i> Lista de Desejos</a></li>
-                            <li><a href="/ecommecer/index.php/cart"><i class="fa fa-shopping-cart"></i> Meu Carrinho</a></li>
+                            <li><a href="/ecommerce/index.php/cart"><i class="fa fa-shopping-cart"></i> Meu Carrinho</a></li>
                             <?php if( checkLogin(false) ){ ?>
 
                             <li><a href="/ecommerce/index.php/profile"><i class="fa fa-user"></i> <?php echo getUserName(); ?></a></li>
