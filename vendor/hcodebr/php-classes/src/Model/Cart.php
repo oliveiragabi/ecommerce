@@ -272,6 +272,23 @@ class Cart extends Model {
 		$this->setvltotal($totals['vlprice'] + $this->getvlfreight());
 	}
 
+	 public static function setmsgError($msg){
+	 	
+     	$_SESSION[Cart::SESSION_ERROR] = $msg;
+     }
+
+     public static function getMsgError(){
+     	$msg = (isset($_SESSION[Cart::SESSION_ERROR])) ? $_SESSION[Cart::SESSION_ERROR] : "";
+
+     	Cart::clearMsgError();
+
+     	return $msg;
+     }
+
+     public static function clearMsgError(){
+     	$_SESSION[Cart::SESSION_ERROR] = NULL;
+     }
+
 	}
 
 

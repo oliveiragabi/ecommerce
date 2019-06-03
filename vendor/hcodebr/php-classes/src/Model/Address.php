@@ -38,6 +38,7 @@ class Address extends Model {
 	public function loadFromCEP($nrcep){
 
 		$data = Address::getCEP($nrcep);
+
 		if(isset($data['logradouro']) && $data['logradouro']){
 			$this->setdesaddress($data['logradouro']);
 			$this->setdescomplement($data['complemento']);
@@ -54,14 +55,14 @@ class Address extends Model {
 
 		$sql = new Sql();
 
-		$results = $sql->select("CALL sp_addresses_save(:idaddress, :desnumber, :idperson, :desaddress, :descomplement, :descity, :desstate, :descountry, :deszipcode, :desdistrict)", [
-			":idaddress"=>$this->getidaddress(),
+		$results = $sql->select("CALL sp_addresses_save( :idperson, :desaddress, :desnumber, :descomplement, :descity, :desstate, :descountry, :deszipcode, :desdistrict)", [
 			":idperson"=>$this->getidperson(),
-			":desaddress"=>$this->getdesaddress(),
-			":descomplement"=>$this->getdescomplement(),
-			":descity"=>$this->getdescity(),
-			":desstate"=>$this->getdesstate(),
-			":descountry"=>$this->getdescountry(),
+			":desaddress"=>utf8_decode($this->getdesaddress()),
+			":desnumber"=>$this->getdesnumber(),
+			":descomplement"=>utf8_decode($this->getdescomplement()),
+			":descity"=>utf8_decode($this->getdescity()),
+			":desstate"=>utf8_decode($this->getdesstate()),
+			":descountry"=>utf8_decode($this->getdescountry()),
 			":deszipcode"=>$this->getdeszipcode(),
 			":desdistrict"=>$this->getdesdistrict()
 
