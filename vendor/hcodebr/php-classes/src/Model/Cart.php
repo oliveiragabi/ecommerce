@@ -182,63 +182,55 @@ class Cart extends Model {
 	}
 
 
-	public function setFreight($nrzipcode){
+	    public function setFreight($nrzipcode){
+        $nrzipcode = str_replace("-", "", $nrzipcode);
+        $totals = $this->getProductsTotals();
 
-		$nrzipcode = str_replace('-', '', $nrzipcode);
+        if($totals['nrqtd'] > 0){ //cálculo do frete
+            
+            if($totals['vllength'] < 16) $totals['vllength'] = 16;
+            if ($totals['vlheight'] < 2) $totals['vlheight'] = 2;
 
-		$totals = $this->getProductsTotals();
+            
+            $qs = http_build_query([
+                'nCdEmpresa'=>'',
+                'sDsSenha'=>'',
+                'nCdServico'=>'40010', //correspondente ao Sedex Varejo
+                'sCepOrigem'=>'09853120',
+                'sCepDestino'=>$nrzipcode,
+                'nVlPeso'=>$totals['vlweight'],
+                'nCdFormato'=>'1', //correspondente a uma caixa ou pacote
+                'nVlComprimento'=>$totals['vllength'],
+                'nVlAltura'=>$totals['vlheight'],
+                'nVlLargura'=>$totals['vlwidth'],
+                'nVlDiametro'=>'0',
+                'sCdMaoPropria'=>'S',
+                'nVlValorDeclarado'=>$totals['vlprice'],
+                'sCdAvisoRecebimento'=>'S',
+            ]);
 
-		if($totals['nrqtd'] > 0 ){
-			//funcao para ler xml
-			//url do caminho e o metodo q vai se usado
-			if($totals['vlwidth'] < 11 ) $totals['vlwidth'] = 11;
-			if($totals['vlheight'] < 2) $totals['vlheight'] = 2;
-			if($totals['vllength'] < 16) $totals['vllength'] = 16;
+            $xml = simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo?" . $qs);
+            
+            $result = $xml->Servicos->cServico;
 
+            if($result->MsgErro != ''){
+                Cart::setMsgError($result->MsgErro);
+            } else{
+                Cart::clearMsgError();
+            }
+            
+            $this->setnrdays($result->PrazoEntrega);
+            $this->setvlfreight(Cart::formatValueToDecimal($result->Valor));
+            $this->setdeszipcode($nrzipcode);
 
-		$qs = http_build_query([
-				'nCdEmpresa'=>'',
-				'sDsSenha'=>'',
-				'nCdServico'=>'40010',
-				'sCepOrigem'=>'09853120',
-				'sCepDestino'=>$nrzipcode,
-				'sVlPeso'=>$totals['vlweight'],
-				'nCdFormato'=>'1',
-				'nVlComprimento'=>$totals['vllength'],
-				'nVlAltura'=>$totals['vlheight'],
-				'nVlLargura'=>$totals['vlwidth'],
-				'nVlDiametro'=>'0',
-				'sCdMaoPropria'=>'S',
-				'nVlValorDeclarado'=> $totals['vlprice'],
-				'sCdAvisoRecebimento'=>'S'
-			]);
+            $this->save();
 
+            return $result;
+        } else{ //limpar as informações
 
-		$xml = simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo?".$qs);
+        }
+    }
 
-     	$result = $xml->Servicos->cServico;
-     	
-		if($result->MsgError != ''){
-
-			Cart::setMsgError($result->MsgErro);
-
-
-		}else{
-			Cart::clearMsgErro();
-		}
-
-			$this->setntdays($result->PrazoEntrega);
-			$this->setvlfreight(Cart::formatValueToDecimal($result->Valor));
-			$this->setdeszipcode($nrzipcode);
-
-			$this->save();
-
-			return $result;
-
-		} else{
-
-		}
-	}
 
 	public static function formatValueToDecimal($value):float{
 

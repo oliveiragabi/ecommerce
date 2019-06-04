@@ -8,7 +8,7 @@
 
                 <button type="submit" id="btn-print" class="button alt" style="margin-bottom:10px">Imprimir</button>
 
-                <iframe src="/boleto/<?php echo htmlspecialchars( $order["idorder"], ENT_COMPAT, 'UTF-8', FALSE ); ?>" name="boleto" frameborder="0" style="width:100%; min-height:1000px; border:1px solid #CCC; padding:20px;"></iframe>
+                <iframe src="/ecommerce/index.php/boleto/<?php echo htmlspecialchars( $order["idorder"], ENT_COMPAT, 'UTF-8', FALSE ); ?>" name="boleto" frameborder="0" style="width:100%; min-height:1000px; border:1px solid #CCC; padding:20px;"></iframe>
 
                 <script>
                 document.querySelector("#btn-print").addEventListener("click", function(event){

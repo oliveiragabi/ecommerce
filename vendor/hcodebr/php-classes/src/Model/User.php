@@ -15,7 +15,7 @@ class User extends Model {
 	const SECRET = "Hcodephp7_Secret";
 	const ERROR = "UserError";
 	const ERROR_REGISTER = "UserErrorRegister";
-	const SUCCESS = "UserSUCCESS";
+	const SUCCESS = "UserSucces";
 
 
 	public static function getFromSession(){
@@ -32,27 +32,25 @@ class User extends Model {
 
 	public static function checkLogin($inadmin = true){
 		
-		if(
-			!isset($_SESSION[User::SESSION]) 
-			|| 
-			!$_SESSION[User::SESSION] 
-			|| 
-			!(int)$_SESSION[User::SESSION]["iduser"] > 0){
-
+				if (
+			!isset($_SESSION[User::SESSION])
+			||
+			!$_SESSION[User::SESSION]
+			||
+			!(int)$_SESSION[User::SESSION]["iduser"] > 0
+		) {
+			//Não está logado
 			return false;
-
-		}else{
-			if($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true){
+		} else {
+			if ($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true) {
 				return true;
-			}else if($inadmin === false){
-				
+			} else if ($inadmin === false) {
 				return true;
-
-			}else{
-				
+			} else {
 				return false;
 			}
 		}
+
 
 	}
 	
@@ -61,39 +59,34 @@ class User extends Model {
   // se o login for valido, irá trazer o hash e validar se esse hash é compativel com o passado pelo usuario
 	public static function login($login, $password) {
 
-		$sql = new Sql();
-		$results = $sql->select("SELECT * FROM tb_users a
-			INNER JOIN tb_persons b
-			ON a.idperson = b.idperson
-			WHERE a.deslogin = :LOGIN", array(
+	$sql = new Sql();
+		$results = $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b ON a.idperson = b.idperson WHERE a.deslogin = :LOGIN", array(
 			":LOGIN"=>$login
-		)); //o ;login é igual ao login recebido no parametro
+		)); 
 
-		if(count($results) === 0)
+		if (count($results) === 0)
 		{
-			// tem que colocar a barra pra achar a exception principal
-			throw new \Exception("Usuário inexistente ou senha invalida");
-			
+			throw new \Exception("Usuario inexistente ou senha invalida 1.");
 		}
 
-		//dados do usuario em hash
 		$data = $results[0];
 
-		if(password_verify($password, $data["despassword"]) === true)
+
+		if (md5($password) == $data["despassword"])
 		{
 			$user = new User();
 
-			//o método set data pega os valores  que tem no banco e coloca em uma variavel 
+			$data['desperson'] = utf8_encode($data['desperson']);
+
 			$user->setData($data);
 
-			$_SESSION[User::SESSION]= $user->getValues();
+			$_SESSION[User::SESSION] = $user->getValues();
 
-			//usando métodos mágicos para nao ficar chamando get e set td hora
 			return $user;
 
-		} else
-		{
-			throw new \Exception("Usuário inexistente ou senha invalida");
+		} else {
+
+			throw new \Exception("Usuario inexistente ou senha invalida.");
 		}
 
 	}
@@ -325,9 +318,7 @@ class User extends Model {
      }
 
      public static function getPasswordHash($password){
-     	return password_hash($password, PASSWORD_DEFAULT, [
-     		'cost'=>12
-     	]);
+     	return md5($password);
      }
 
 
