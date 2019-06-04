@@ -3,8 +3,9 @@
 namespace Hcode\Model;
 
 use \Hcode\DB\Sql;
-use \Hcode\Mailer;
 use \Hcode\Model;
+USE \Hcode\Mailer;
+
 
 
 class Category extends Model {
@@ -19,20 +20,14 @@ class Category extends Model {
 	}
 
 	public function save(){
-
-		$sql = new Sql();
-
-		//criando procedure
-		$results = $sql->select("CALL sp_categories_save( :idcategory, :descategory )", array(
-			":idcategory" => $this->getidcategory(),
-			":descategory" => $this->getdescategory(),
-
-		));
-
-		$this->setData($results[0]);
-
-		Category::updatefile();
-	}
+        $sql = new Sql();
+        $results = $sql->select("CALL sp_categories_save(:idcategory, :descategory)", array(
+            ":idcategory"=>$this->getidcategory(),
+            ":descategory"=>$this->getdescategory()
+        ));
+        $this->setData($results[0]);
+        Category::updateFile();
+    }
 
 
 	public function get ($idcategory){
@@ -168,6 +163,43 @@ class Category extends Model {
 
 	}
 
+	
+     public static function getPage($page=1, $itemsPerPage = 10){
+        $start = ($page-1) * $itemsPerPage; 
+        $sql = new Sql();
+        $results = $sql->select("
+            SELECT SQL_CALC_FOUND_ROWS *
+            FROM tb_categories 
+            ORDER BY descategory
+            LIMIT $start, $itemsPerPage;");
+        $resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
+        return [
+            'data'=>$results,
+            'total'=>(int)$resultTotal[0]["nrtotal"],
+            'pages'=>ceil($resultTotal[0]["nrtotal"]/$itemsPerPage)  //ceil- função que coverte arredondando para cima (inteiro)
+        ];
+        
+    }
+    
+    public static function getPageSearch($search, $page=1, $itemsPerPage = 10){
+        $start = ($page-1) * $itemsPerPage; 
+        $sql = new Sql();
+        $results = $sql->select("
+            SELECT SQL_CALC_FOUND_ROWS *
+            FROM tb_categories  
+            WHERE descategory LIKE :search 
+            ORDER BY descategory
+            LIMIT $start, $itemsPerPage;",
+            [
+                ':search'=>'%'.$search.'%'
+            ]);
+        $resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
+        return [
+            'data'=>$results,
+            'total'=>(int)$resultTotal[0]["nrtotal"],
+            'pages'=>ceil($resultTotal[0]["nrtotal"]/$itemsPerPage)  //ceil- função que coverte arredondando para cima (inteiro)
+        ];  
+    }
 
 
 	}
