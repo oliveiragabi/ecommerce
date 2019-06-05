@@ -16,7 +16,7 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="product-content-right">
-					<form action="/ecommerce/index.php/order" class="checkout" method="post" name="checkout">
+					<form action="/ecommerce/index.php/checkout" class="checkout" method="post" name="checkout">
 						<div id="customer_details" class="col2-set">
 							<div class="row">
 								<div class="col-md-12">
@@ -113,6 +113,14 @@
 													</tr>
 												</tfoot>
 											</table>
+										<p id="billing_state_field" class="form-row form-row-first address-field validate-state" data-o_class="form-row form-row-first address-field validate-state">
+											<input type="radio" id="method-pagseguro" name="payment-method" placeholder="País" value="1" >
+											<label class="" for="method-pagseguro"> <img style="height: 64px;" src="/ecommerce/res/site/img/logo-pagseguro.png"> </label>
+										</p>
+										<p id="billing_state_field" class="form-row form-row-first address-field validate-state" data-o_class="form-row form-row-first address-field validate-state">
+											<input type="radio" checked="checked" id="method-paypal" name="payment-method" placeholder="País" value="1" >
+											<label class="" for="method-paypal"> <img style="height: 64px;"  src="/ecommerce/res/site/img/logo-paypal.png"> </label>
+										</p>
 											<div id="payment">
 												<div class="form-row place-order">
 													<input type="submit" data-value="Place order" value="Continuar" id="place_order" name="woocommerce_checkout_place_order" class="button alt">

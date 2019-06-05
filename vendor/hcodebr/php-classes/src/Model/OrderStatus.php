@@ -1,13 +1,11 @@
 <?php 
 
+namespace Hcode\Model;
+
 use \Hcode\DB\Sql;
 use \Hcode\Model;
-use \Hcode\Mailer;
-use \Hcode\Model\Order;
-use \Hcode\Model\Products;
 
-
-class Order extends Model{
+class OrderStatus extends Model{
 
 	const EM_ABERTO = 1;
 	const AGUARDANDO_PAGAMENTO = 2;

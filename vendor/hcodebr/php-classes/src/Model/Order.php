@@ -1,13 +1,10 @@
 <?php 
 
+
 namespace Hcode\Model;
- 
 use \Hcode\DB\Sql;
 use \Hcode\Model;
-USE \Hcode\Mailer;
-USE \Hcode\Model\Cart;
-USE \Hcode\Model\User;
-USE \Hcode\Model\Products;
+use \Hcode\Model\Cart;
 
 
 class Order extends Model{
